@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">User Profiles</h2>
+
+    {% if profiles %}
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Email</th>
+                    <th scope="col" class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for profile in profiles %}
+                <tr>
+                    <td>{{ profile.user.email }}</td>
+                    <td class="text-center">
+                        <!-- Update Details Button -->
+                        <a href="{% url 'admin_profile_update' profile.id %}" 
+                           class="btn btn-sm btn-primary me-2">
+                            Update Details
+                        </a>
+                        <!-- View Details Button -->
+                        <a href="{% url 'admin_profile_detail' profile.id %}" 
+                           class="btn btn-sm btn-info">
+                            View Details
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning text-center">
+            No profiles found.
+        </div>
+    {% endif %}
+
+    <!-- Go Back Button -->
+    <div class="mt-4 text-center">
+        <a href="/" class="btn btn-secondary">⬅ Go Back</a>
+    </div>
+</div>
+{% endblock %}

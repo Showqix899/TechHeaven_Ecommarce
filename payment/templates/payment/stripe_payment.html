@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+
+{% block title %}Stripe Payment{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-lg border-0 rounded-3 mx-auto" style="max-width: 500px;">
+    <div class="card-body p-4">
+      <h3 class="text-center mb-3">Stripe Payment</h3>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <small class="text-muted">Order ID: {{ order.id }}</small>
+        <a href="{% url 'order_cancle' order.id %}" class="btn btn-sm btn-outline-danger">Cancel</a>
+      </div>
+
+      <form id="payment-form">
+        {% csrf_token %}
+
+        <!-- Stripe Card Input -->
+        <div id="card-element" class="form-control mb-3"></div>
+
+        <!-- Stripe Errors -->
+        <div id="card-errors" class="text-danger small mb-2"></div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-success w-100">
+          Pay {{ order.total_amount }} BDT
+        </button>
+      </form>
+
+      {% if user_profile.points >= 10 %}
+      <div class="alert alert-info mt-4 text-center">
+        <p class="mb-1">
+          🎉 You have <strong>{{ user_profile.points }}</strong> points.
+        </p>
+        <a href="{% url 'redeem_points' order.id %}" class="btn btn-sm btn-primary">
+          Redeem for {{ request.session.discount_limit }}% Discount
+        </a>
+      </div>
+      {% endif %}
+
+      {% if message %}
+      <div class="alert alert-warning mt-3 text-center">
+        {{ message }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Load Stripe -->
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  const stripe = Stripe("{{ stripe_public_key|default:'pk_test_missing' }}");
+  const elements = stripe.elements();
+  const card = elements.create("card", { style: { base: { fontSize: "16px" } } });
+  card.mount("#card-element");
+
+  const form = document.getElementById("payment-form");
+  form.addEventListener("submit", function(event) {
+    event.preventDefault();
+    stripe.confirmCardPayment("{{ client_secret|default:'' }}", {
+      payment_method: { card: card }
+    }).then(function(result) {
+      if (result.error) {
+        document.getElementById("card-errors").textContent = result.error.message;
+      } else if (result.paymentIntent.status === "succeeded") {
+        window.location.href = "{% url 'stripe_success' order.id %}";
+      }
+    });
+  });
+</script>
+{% endblock %}

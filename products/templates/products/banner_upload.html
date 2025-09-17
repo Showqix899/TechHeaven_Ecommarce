@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}Upload Banner{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="col-12 col-md-8 col-lg-6 mx-auto bg-white rounded-3 shadow-sm p-4">
+
+    <h3 class="fw-bold mb-3 text-center">Upload Banner</h3>
+
+    <!-- Success message -->
+    {% if success %}
+      <div class="alert alert-success">{{ success }}</div>
+    {% endif %}
+
+    <!-- Error message -->
+    {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" class="d-grid gap-3">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

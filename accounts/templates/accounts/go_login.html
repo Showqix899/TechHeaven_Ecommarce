@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block title %}Account Activated{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+  <div class="col-12 col-md-8 col-lg-5 text-center rounded-4 p-4 shadow">
+    <h2 class="mb-3 text-success">✅ Account Activated!</h2>
+    <p class="mb-4">Your account has been successfully activated. You can now log in to continue.</p>
+    <a href="{{ link }}" class="btn btn-primary px-4 py-2">Go to Login</a>
+  </div>
+</div>
+{% endblock %}

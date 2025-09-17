@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+{% block title %}
+  Update Product
+{% endblock %}
+
+{% block content %}
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-8 col-lg-6">
+        <div class="card shadow-sm rounded-4 p-4">
+          <h2 class="h5 mb-4 text-center fw-semibold">Update Product</h2>
+
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Update</button>
+          </form>
+          <a href="{% url 'product_list'%}" class="btn btn-outline-secondary btn-sm mt-3">back</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

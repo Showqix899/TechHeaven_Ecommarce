@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}Front Page{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+
+  <!-- Banner Section -->
+  <div class="mb-5">
+    <!-- Replace with your banner image -->{% if banner %}
+    <img src="{{ banner.image.url }}" class="img-fluid w-100 rounded-3 shadow-sm" alt="Banner">
+{% else %}
+    <img src="data:image/jpeg;base64,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" class="img-fluid w-100 rounded-3 shadow-sm" alt="Default Banner">
+{% endif %}
+  </div>
+
+  <div class="container">
+
+    <!-- Latest Products -->
+    <div class="mb-5">
+      <h3 class="fw-bold mb-3">Latest Products</h3>
+      {% if latest_products %}
+        <div class="row g-4">
+          {% for product in latest_products %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+              <div class="card h-100 shadow-sm">
+                {% if product.image %}
+                  <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                {% else %}
+                  <img src="{% static 'images/no-image.png' %}" class="card-img-top" alt="No Image">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                  <h6 class="card-title fw-semibold">{{ product.name }}</h6>
+                  <p class="card-text text-muted small mb-2">{{ product.description|truncatewords:12 }}</p>
+                  <p class="fw-bold mb-2">BDT {{ product.price }}</p>
+                  <a href="{% url 'product_detail' product.id %}" class="btn btn-primary btn-sm mt-auto">View</a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted">No latest products available.</p>
+      {% endif %}
+    </div>
+
+    <!-- Discounted Products -->
+    <div class="mb-5">
+      <h3 class="fw-bold mb-3">Discounted Products</h3>
+      {% if discounted_products %}
+        <div class="row g-4">
+          {% for product in discounted_products %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+              <div class="card h-100 shadow-sm border-success">
+                {% if product.image %}
+                  <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                {% else %}
+                  <img src="{% static 'images/no-image.png' %}" class="card-img-top" alt="No Image">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                  <h6 class="card-title fw-semibold">{{ product.name }}</h6>
+                  <p class="card-text text-muted small mb-2">{{ product.description|truncatewords:12 }}</p>
+                  <p class="mb-1">
+                    <span class="fw-bold text-danger">BDT {{ product.price }}</span>
+                    {% if product.prev_price %}
+                      <span class="text-muted text-decoration-line-through ms-2">BDT {{ product.prev_price }}</span>
+                    {% endif %}
+                  </p>
+                  <span class="badge bg-success mb-2">-{{ product.discount }}% Off</span>
+                  <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-success btn-sm mt-auto">Grab Deal</a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted">No discounted products available.</p>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}
