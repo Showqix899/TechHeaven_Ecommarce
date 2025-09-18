@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block title %}Password Reset Done{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+  <div class="col-12 col-md-8 col-lg-5 text-center rounded-4 p-4 shadow">
+    <h2 class="mb-3 text-success">✅ Your Password Has Been Reset</h2>
+    <a href="{{ link }}" class="btn btn-primary px-4 py-2">Go to Login</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,5 +1,5 @@
 from django.shortcuts import render,HttpResponse
-from order.models import Order
+from order.models import Order,OrderItem
 from django.contrib.auth.decorators import login_required
 
 import stripe
@@ -11,6 +11,8 @@ from django.shortcuts import redirect,get_object_or_404
 from .tasks import send_payment_confirmation_email,cart_item_deletion,stock_updation
 from .models import PaymentHistory
 from userprofile.models import CustomUserProfile
+from django.core.mail import send_mail
+
 
 # Create your views here.
 
@@ -111,8 +113,43 @@ def stripe_success(request,order_id):
         user_email=request.user.email
         message=f"payment was successfull. An email has been sent to {request.user.email}"
 
-        stock_updation.delay(order_id) #to update stock
-        send_payment_confirmation_email.delay(order.id,cart.id,user_email) #emailing user the payment info
+        try:
+            subject = "Stripe Payment Confirmation"
+
+            cart_items = CartItem.objects.filter(cart_id=cart.id, is_selected=True)
+            order = Order.objects.get(id=order_id)
+
+            #cart item delation
+            for item in cart_items:
+                message += (
+                f"Name: {item.product.name} - Quantity: {item.quantity} "
+                f"- Total Price: {item.total_price()} BDT\n"
+                )
+            message += f"\nTotal Amount: {order.total_amount} BDT at address {str(order.shipping_address)}\n"
+
+        except Exception as e:
+
+            message = str(e)
+            subject = "Stripe Payment failed"
+        
+        send_mail(subject, message, settings.EMAIL_HOST_USER, [user_email])
+
+
+        
+        #stock_updation.delay(order_id) #to update stock
+        try:
+            order_items = OrderItem.objects.filter(order_id=order_id)
+
+            for item in order_items:
+                product = item.product
+                product.stock = max(0, product.stock - item.quantity)  # Prevent negative stock
+                product.save()
+                print("stock updated")
+
+
+        except Exception as e:
+            return f"Stock update failed for order {order_id}: {str(e)}"
+        
 
         user_profile = CustomUserProfile.objects.get(user=request.user)
         user_profile.points += int(order.total_amount // 100)  # Assuming 1 point for every 100 currency units spent
@@ -123,8 +160,8 @@ def stripe_success(request,order_id):
         try:
             # If the order is for multiple items, clear the cart
             cart = get_cart(request)
-            cart_item_deletion.delay(cart.id)
-            print("Cart items deleted successfully.")
+            cart_items=CartItem.objects.filter(cart=cart.id,is_selected=True)
+            cart_items.delete()
             
         except Exception as e:
             print(f"showqi-> deleting cart item: {e}")

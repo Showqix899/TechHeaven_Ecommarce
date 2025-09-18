@@ -23,6 +23,7 @@ from payment.models import PaymentHistory
 from activity_log.models import ActivityLog
 from userprofile.task import user_profile_creation
 from django.core.cache import cache
+from userprofile.models import CustomUserProfile
 
 
 User = get_user_model()#get user model
@@ -49,12 +50,15 @@ def signup_view(request):
             activation_link = request.build_absolute_uri(reverse('activate', args=[uid, token]))
 
             message = f'Hi {user.email}, click here to activate your account: {activation_link}'
-            email_send.delay('Activate your account', message, settings.EMAIL_HOST_USER, [user.email])
-            print(f"Activation link: {activation_link}")  # Debugging line
+            send_mail('Activate your account', message, settings.EMAIL_HOST_USER, [user.email])
+            
 
             if user.id:
-                # Create user profile asynchronously
-                user_profile_creation.delay(user.id)  # Call the task to create user profile
+                #user profile
+                user_profile=CustomUserProfile.objects.create(
+                    user=user
+                )
+                user_profile.save()
             else:
                 print("User ID is not available, profile creation task not called.")
 
@@ -127,7 +131,7 @@ def password_reset_request(request):
                 token = default_token_generator.make_token(user)
                 reset_link = request.build_absolute_uri(reverse('password_reset_confirm', args=[uid, token]))
                 message = f'Hi {user.email}, click here to reset your password: {reset_link}'
-                email_send.delay('Password Reset', message, settings.EMAIL_HOST_USER, [user.email])
+                send_mail('Password Reset', message, settings.EMAIL_HOST_USER, [user.email])
 
             return render(request, 'accounts/email_sent.html', {'email': email})
     else:
@@ -149,12 +153,12 @@ def password_reset_confirm(request, uidb64, token):
             form = CustomSetPasswordForm(user, request.POST)
             if form.is_valid():
                 form.save()
-                return HttpResponse('Password reset successful! <a href="/login/">Login here</a>')
+                return render(request,'accounts/pass_reset_new_login.html',{'link':'/login/'})
         else:
             form = CustomSetPasswordForm(user)
         return render(request, 'accounts/reset_password_form.html', {'form': form})
     else:
-        return HttpResponse('Reset link invalid or expired.')
+        return render(request,'accounts/message.html',{'message':'invalid or expired link'})
 
 
 from django.utils import timezone
@@ -184,7 +188,7 @@ def admin_invitation_generator(request):
             if user and user.role=='USER':
                 link = f'http://{get_current_site(request).domain}/user/admin-registration/{invitation.token}/'
                 message = f'Hi, click here to register as an admin: {link}'
-                email_send.delay(
+                send_mail(
                 'Admin Invitation',
                 message,
                 settings.EMAIL_HOST_USER,
@@ -201,7 +205,7 @@ def admin_invitation_generator(request):
 
             link = f'http://{get_current_site(request).domain}/user/admin-registration/{invitation.token}/'
             message = f'Hi, click here to register as an admin: {link}'
-            email_send.delay(
+            send_mail(
                 'Admin Invitation',
                 message,
                 settings.EMAIL_HOST_USER,
