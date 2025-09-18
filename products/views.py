@@ -148,7 +148,7 @@ def product_update(request, product_id):
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()  # The form handles all price/discount logic
-            product_cache_update.delay()
+            
             return render(request, 'products/product_update.html', {
                 'form': ProductForm(instance=product),
                 'success': 'Product updated successfully!'
