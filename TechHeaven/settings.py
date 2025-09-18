@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# SECURITY WARNING: keep the secret key used in production secret!$7_lu
 SECRET_KEY = os.environ.get('SECRET_KEY') or 'django-insecure-snt)z^1#=ht6c@^4=8n&%u$7_lujgx2$p*xh7f4ye_q5emojs!'
 #django-insecure-snt)z^1#=ht6c@^4=8n&%u$7_lujgx2$p*xh7f4ye_q5emojs!
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -209,7 +209,7 @@ STRIPE_SECRET_KEY = os.environ.get("stripe_secret_key")
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",  # 1 is the DB number
+        "LOCATION":os.environ.get("REDIS_URL"), 
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -217,11 +217,6 @@ CACHES = {
 }
 
 
-#celery configuratio
-CELERY_BROKER_URL =os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
 
 # 'redis://localhost:6379/0'
 # 'redis://localhost:6379/0'
